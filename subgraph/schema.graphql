@@ -1,0 +1,222 @@
+type MarketFactory @entity(immutable: false) {
+  id: Bytes! # address
+  marketCount: BigInt!
+  totalVolumeUSD: BigInt!
+  totalLiqudityUSD: BigInt!
+}
+
+type Market @entity(immutable: false) {
+  # Market address
+  id: Bytes! # address
+  #
+  # Market index in factory
+  marketIndex: BigInt! # uint256
+  #
+  # Market general info
+  marketURI: String!
+  question: String! # string
+  outcomeCount: BigInt! # uint256
+  outcomes: [String!]! # string[]
+  outcomesPrice: [BigInt!]! # uint256[]
+  closeTime: BigInt! # uint256
+  createTime: BigInt! # uint256
+  closedAtTime: BigInt! # uint256
+  creator: Bytes! # address
+  oracle: Bytes! # address
+  marketAMM: Bytes! # address
+  resolveDelay: BigInt! # uint256
+  feeBPS: BigInt! # uint256
+  state: BigInt! # uint8
+  resolvedOutcome: BigInt
+  #
+  # Create block number
+  blockNumber: BigInt!
+  #
+  # Market
+  volumeUSD: BigInt!
+  tvlUSD: BigInt! # Total USDC locked in the market pool
+  #
+  # Derived fields
+  userMarketDatas: [UserMarketData!]! @derivedFrom(field: "market")
+  feesClaimedEvents: [FeesClaimed!]! @derivedFrom(field: "market")
+  liquidityAddedEvents: [LiquidityAdded!]! @derivedFrom(field: "market")
+  liquidityClaimedEvents: [LiquidityClaimed!]! @derivedFrom(field: "market")
+  liquidityRemovedEvents: [LiquidityRemoved!]! @derivedFrom(field: "market")
+  marketStateUpdates: [MarketStateUpdated!]! @derivedFrom(field: "market")
+  rewardClaims: [RewardsClaimed!]! @derivedFrom(field: "market")
+  sharesBoughtEvents: [SharesBought!]! @derivedFrom(field: "market")
+  sharesSoldEvents: [SharesSold!]! @derivedFrom(field: "market")
+  userOutcomeShares: [UserOutcome!]! @derivedFrom(field: "market")
+}
+
+type User @entity(immutable: false) {
+  id: Bytes! # address
+  marketDatas: [UserMarketData!]! @derivedFrom(field: "user")
+  feesClaimedEvents: [FeesClaimed!]! @derivedFrom(field: "claimer")
+  liquidityAddedEvents: [LiquidityAdded!]! @derivedFrom(field: "provider")
+  liquidityClaimedEvents: [LiquidityClaimed!]! @derivedFrom(field: "claimer")
+  liquidityRemovedEvents: [LiquidityRemoved!]! @derivedFrom(field: "provider")
+  rewardClaims: [RewardsClaimed!]! @derivedFrom(field: "claimer")
+  sharesBoughtEvents: [SharesBought!]! @derivedFrom(field: "buyer")
+  sharesSoldEvents: [SharesSold!]! @derivedFrom(field: "seller")
+  outcomes: [UserOutcome!]! @derivedFrom(field: "user")
+}
+
+type UserMarketData @entity(immutable: false) {
+  id: Bytes!
+  feesClaimed: BigInt! # uint256
+  rewardsClaimed: BigInt! # uint256
+  liquidityShares: BigInt! # uint256
+  market: Market!
+  user: User!
+  outcomes: [UserOutcome!]! @derivedFrom(field: "marketData")
+}
+
+type UserOutcome @entity(immutable: false) {
+  id: Bytes!
+  index: BigInt!
+  shares: BigInt!
+  user: User!
+  market: Market!
+  marketData: UserMarketData!
+}
+
+type MarketHourData @entity(immutable: false) {
+  id: Bytes!
+  hourStartUnix: Int! # unix timestamp for start of hour
+  market: Market!
+
+  # volume stats
+  hourlyVolumeUSD: BigInt!
+
+  # liquidity stats
+  hourlyTvlUSD: BigInt!
+
+  # price
+  marketOutcomePrices: [MarketHourOutcome!]!
+    @derivedFrom(field: "marketHourData")
+}
+
+type MarketHourOutcome @entity(immutable: false) {
+  id: Bytes!
+  market: Market!
+  marketHourData: MarketHourData!
+  index: BigInt!
+  price: BigInt!
+}
+
+type MarketDayData @entity(immutable: false) {
+  id: Bytes!
+  date: Int! # unix timestamp for start of hour
+  market: Market!
+
+  # volume stats
+  dailyVolumeUSD: BigInt!
+
+  # liquidity stats
+  dailyTvlUSD: BigInt!
+
+  # price
+  marketOutcomePrices: [MarketDayOutcome!]! @derivedFrom(field: "marketDayData")
+}
+
+type MarketDayOutcome @entity(immutable: false) {
+  id: Bytes!
+  market: Market!
+  marketDayData: MarketDayData!
+  index: BigInt!
+  price: BigInt!
+}
+
+type FeesClaimed @entity(immutable: true) {
+  id: Bytes!
+  market: Market! # address
+  claimer: User! # address
+  amount: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type LiquidityAdded @entity(immutable: true) {
+  id: Bytes!
+  market: Market! # address
+  provider: User! # address
+  amount: BigInt! # uint256
+  liquidityShares: BigInt! # uint256
+  outcomeSharesReturned: [BigInt!]! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type LiquidityClaimed @entity(immutable: true) {
+  id: Bytes!
+  market: Market! # address
+  claimer: User! # address
+  amount: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type LiquidityRemoved @entity(immutable: true) {
+  id: Bytes!
+  market: Market! # address
+  provider: User! # address
+  shares: BigInt! # uint256
+  amount: BigInt! # uint256
+  outcomeSharesReturned: [BigInt!]! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type MarketStateUpdated @entity(immutable: true) {
+  id: Bytes!
+  market: Market! # address
+  updatedAt: BigInt! # uint256
+  state: Int! # uint8
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type RewardsClaimed @entity(immutable: true) {
+  id: Bytes!
+  market: Market! # address
+  claimer: User! # address
+  amount: BigInt! # uint256
+  outcomeIndex: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type SharesBought @entity(immutable: true) {
+  id: Bytes!
+  market: Market! # address
+  buyer: User! # address
+  outcomeIndex: BigInt! # uint256
+  amount: BigInt! # uint256
+  fee: BigInt! # uint256
+  shares: BigInt! # uint256
+  newOutcomePrice: [BigInt!]! # uint256[]
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type SharesSold @entity(immutable: true) {
+  id: Bytes!
+  market: Market! # address
+  seller: User! # address
+  outcomeIndex: BigInt! # uint256
+  amount: BigInt! # uint256
+  fee: BigInt! # uint256
+  shares: BigInt! # uint256
+  newOutcomePrice: [BigInt!]! # uint256[]
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}

@@ -1,0 +1,10 @@
+[profile.default]
+src = 'contracts'
+out = 'out'
+libs = ['lib']
+force = true # Required by openzeppelin-foundry-upgrades
+ffi = true # Required by openzeppelin-foundry-upgrades
+ast = true # Required by openzeppelin-foundry-upgrades 
+build_info = true # Required by openzeppelin-foundry-upgrades
+extra_output = ["storageLayout"]
+auto_detect_solc = true

@@ -1,0 +1,75 @@
+specVersion: 1.2.0
+indexerHints:
+  prune: auto
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: MarketFactory
+    network: sei-testnet
+    source:
+      address: '0x9Fe69930e7b8eD0d3F2E4F911522164A2FC1fb77'
+      abi: MarketFactory
+      startBlock: 193674000
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - Market
+      abis:
+        - name: MarketFactory
+          file: ./abis/MarketFactory.json
+      eventHandlers:
+        - event: MarketCreated(indexed address,indexed address,indexed uint256)
+          handler: handleMarketCreated
+      file: ./src/market-factory.ts
+templates:
+  - name: MarketTemplate
+    kind: ethereum/contract
+    network: sei-testnet
+    source:
+      abi: Market
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - FeesClaimed
+        - LiquidityAdded
+        - LiquidityClaimed
+        - LiquidityRemoved
+        - Market
+        - MarketStateUpdated
+        - RewardsClaimed
+        - SharesBought
+        - SharesSold
+        - User
+        - UserMarketData
+      abis:
+        - name: Market
+          file: ./abis/Market.json
+      eventHandlers:
+        - event: FeesClaimed(indexed address,uint256)
+          handler: handleFeesClaimed
+        - event: LiquidityAdded(indexed address,uint256,uint256,uint256[])
+          handler: handleLiquidityAdded
+        - event: LiquidityClaimed(indexed address,uint256)
+          handler: handleLiquidityClaimed
+        - event: LiquidityRemoved(indexed address,uint256,uint256,uint256[])
+          handler: handleLiquidityRemoved
+        - event: MarketInitialized(string,string,uint256,uint256,address,address,address,uint256,uint256,string[],uint256[])
+          handler: handleMarketInitialized
+        - event: MarketStateUpdated(uint256,uint8)
+          handler: handleMarketStateUpdated
+        - event: RewardsClaimed(indexed address,uint256,uint256)
+          handler: handleRewardsClaimed
+        - event: SharesBought(indexed address,indexed uint256,indexed
+            uint256,uint256,uint256,uint256[])
+          handler: handleSharesBought
+        - event: SharesSold(indexed address,indexed uint256,indexed
+            uint256,uint256,uint256,uint256[])
+          handler: handleSharesSold
+        - event: MarketResolved(uint256)
+          handler: handleMarketResolved
+      file: ./src/market.ts

@@ -1,0 +1,7 @@
+smart-contracts/out/*
+.idea
+node_modules
+subgraph/generated
+subgraph/build
+subgraph/data
+.DS_Store

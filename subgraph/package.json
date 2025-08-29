@@ -1,0 +1,21 @@
+{
+  "name": "@predictum/subgrpah",
+  "license": "UNLICENSED",
+  "scripts": {
+    "codegen": "graph codegen",
+    "build": "graph build",
+    "deploy": "graph deploy --node https://api.studio.thegraph.com/deploy/ predict",
+    "create-local": "graph create --node http://localhost:8020/ predict",
+    "remove-local": "graph remove --node http://localhost:8020/ predict",
+    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 predict",
+    "test": "graph test"
+  },
+  "dependencies": {
+    "@goldskycom/cli": "12.0.0",
+    "@graphprotocol/graph-cli": "0.97.1",
+    "@graphprotocol/graph-ts": "0.38.1"
+  },
+  "devDependencies": {
+    "matchstick-as": "0.6.0"
+  }
+}

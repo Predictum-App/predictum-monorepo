@@ -1,0 +1,120 @@
+"use client";
+
+import { Menu as MenuIcon } from "lucide-react";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
+
+import { Button } from "@/app/components/ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@/app/components/ui/popover";
+
+import { CashBalance } from "../navigation/CashBalance";
+import { Peers } from "../icons/Peers";
+
+export const CustomConnectButton = () => {
+  return (
+    <>
+      <ConnectButton.Custom>
+        {({ account, chain, openConnectModal, openChainModal, mounted }) => {
+          const ready = mounted;
+          const connected = ready && account && chain;
+
+          return (
+            <div className="flex items-center space-x-2 sm:space-x-4">
+              {/* Mobile menu button */}
+              <Popover>
+                <PopoverTrigger className="md:hidden p-2 text-gray-400 hover:text-white transition-colors">
+                  <MenuIcon />
+                </PopoverTrigger>
+                <PopoverContent
+                  className="md:hidden w-full bg-dark-800/95 border border-dark-700/50"
+                  side={"bottom"}
+                  align={"center"}
+                  asChild
+                >
+                  <div className="pt-2 pb-3 space-y-1">
+                    {/* Mobile wallet connection */}
+                    <div className="pl-3 pr-4 py-2">
+                      {connected && !chain?.unsupported ? (
+                        <>
+                          {/* Mobile Portfolio Info */}
+                          <div className="flex justify-between items-center mb-3">
+                            <CashBalance side={"start"} />
+                          </div>
+
+                          {/* Mobile Wallet Address */}
+                          <div className="flex items-center space-x-2 bg-dark-800/60 border border-dark-700/50 rounded-full px-4 py-2 text-white text-sm w-full justify-center">
+                            <div className="w-2 h-2 bg-sei-400 rounded-full"></div>
+                            <span>
+                              {account.address?.slice(0, 6)}...{account.address?.slice(-4)}
+                            </span>
+                          </div>
+                        </>
+                      ) : connected && chain?.unsupported ? (
+                        <Button
+                          variant={"default"}
+                          onClick={openChainModal}
+                          className="px-4 py-2 w-full justify-center rounded-full"
+                        >
+                          Wrong Network
+                        </Button>
+                      ) : (
+                        <Button
+                          variant={"default"}
+                          onClick={openConnectModal}
+                          className="flex items-center justify-center space-x-2 px-4 py-2 w-full rounded-full"
+                        >
+                          <svg
+                            className="w-4 h-4"
+                            viewBox="0 0 25 24"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M6.02344 21C4.97344 21 4.08594 20.6375 3.36094 19.9125C2.63594 19.1875 2.27344 18.3 2.27344 17.25C2.27344 16.2 2.63594 15.3125 3.36094 14.5875C4.08594 13.8625 4.97344 13.5 6.02344 13.5C7.07344 13.5 7.96094 13.8625 8.68594 14.5875C9.41094 15.3125 9.77344 16.2 9.77344 17.25C9.77344 18.3 9.41094 19.1875 8.68594 19.9125C7.96094 20.6375 7.07344 21 6.02344 21ZM18.5484 21C17.4984 21 16.6109 20.6375 15.8859 19.9125C15.1609 19.1875 14.7984 18.3 14.7984 17.25C14.7984 16.2 15.1609 15.3125 15.8859 14.5875C16.6109 13.8625 17.4984 13.5 18.5484 13.5C19.5984 13.5 20.4859 13.8625 21.2109 14.5875C21.9359 15.3125 22.2984 16.2 22.2984 17.25C22.2984 18.3 21.9359 19.1875 21.2109 19.9125C20.4859 20.6375 19.5984 21 18.5484 21ZM6.02344 19.5C6.65679 19.5 7.19009 19.2834 7.62344 18.85C8.05679 18.4167 8.27344 17.8834 8.27344 17.25C8.27344 16.6166 8.05679 16.0833 7.62344 15.65C7.19009 15.2166 6.65679 15 6.02344 15C5.39009 15 4.85677 15.2166 4.42344 15.65C3.9901 16.0833 3.77344 16.6166 3.77344 17.25C3.77344 17.8834 3.9901 18.4167 4.42344 18.85C4.85677 19.2834 5.39009 19.5 6.02344 19.5ZM18.5484 19.5C19.1818 19.5 19.7151 19.2834 20.1484 18.85C20.5818 18.4167 20.7984 17.8834 20.7984 17.25C20.7984 16.6166 20.5818 16.0833 20.1484 15.65C19.7151 15.2166 19.1818 15 18.5484 15C17.9151 15 17.3818 15.2166 16.9484 15.65C16.5151 16.0833 16.2984 16.6166 16.2984 17.25C16.2984 17.8834 16.5151 18.4167 16.9484 18.85C17.3818 19.2834 17.9151 19.5 18.5484 19.5ZM12.2984 14.85C11.8073 14.85 11.3928 14.6812 11.0549 14.3435C10.7173 14.0057 10.5484 13.5912 10.5484 13.1C10.5484 12.6089 10.7173 12.1943 11.0549 11.8565C11.3928 11.5188 11.8073 11.35 12.2984 11.35C12.7896 11.35 13.2041 11.5188 13.5419 11.8565C13.8796 12.1943 14.0484 12.6089 14.0484 13.1C14.0484 13.5912 13.8796 14.0057 13.5419 14.3435C13.2041 14.6812 12.7896 14.85 12.2984 14.85ZM12.2984 9.5C11.2484 9.5 10.3609 9.1375 9.63594 8.4125C8.91094 7.6875 8.54844 6.8 8.54844 5.75C8.54844 4.7 8.91094 3.8125 9.63594 3.0875C10.3609 2.3625 11.2484 2 12.2984 2C13.3484 2 14.2359 2.3625 14.9609 3.0875C15.6859 3.8125 16.0484 4.7 16.0484 5.75C16.0484 6.8 15.6859 7.6875 14.9609 8.4125C14.2359 9.1375 13.3484 9.5 12.2984 9.5ZM12.2984 8C12.9318 8 13.4651 7.78335 13.8984 7.35C14.3318 6.91665 14.5484 6.38335 14.5484 5.75C14.5484 5.11665 14.3318 4.58334 13.8984 4.15C13.4651 3.71667 12.9318 3.5 12.2984 3.5C11.6651 3.5 11.1318 3.71667 10.6984 4.15C10.2651 4.58334 10.0484 5.11665 10.0484 5.75C10.0484 6.38335 10.2651 6.91665 10.6984 7.35C11.1318 7.78335 11.6651 8 12.2984 8Z"
+                              fill="currentColor"
+                            />
+                          </svg>
+                          <span>Connect Wallet</span>
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </PopoverContent>
+              </Popover>
+
+              {connected && !chain.unsupported ? (
+                <>
+                  {/* Cash Balance */}
+                  <CashBalance className="hidden lg:flex " side={"end"} />
+
+                  {/* Wallet Address */}
+                  <div className="flex items-center space-x-2 bg-dark-800/60 border border-dark-700/50 rounded-full px-3 py-2 text-white text-sm">
+                    <div className="w-2 h-2 bg-sei-400 rounded-full"></div>
+                    <span>{account.displayName}</span>
+                  </div>
+                </>
+              ) : connected && chain?.unsupported ? (
+                <Button
+                  variant={"default"}
+                  onClick={openChainModal}
+                  className="flex items-center space-x-1.5 sm:space-x-2 rounded-full"
+                >
+                  Wrong Network
+                </Button>
+              ) : (
+                <Button
+                  variant={"default"}
+                  onClick={openConnectModal}
+                  className="flex items-center space-x-1.5 sm:space-x-2 rounded-full"
+                >
+                  <Peers />
+                  <span className="hidden sm:inline">Connect Wallet</span>
+                  <span className="sm:hidden">Connect</span>
+                </Button>
+              )}
+            </div>
+          );
+        }}
+      </ConnectButton.Custom>
+    </>
+  );
+};
